@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legalitas & Etika Rekam Medis | Kelompok 4 - S1 Administrasi Rumah Sakit</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome 6 CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts: Plus Jakarta Sans & Merriweather -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        serif: ['"Merriweather"', 'serif'],
+                    },
+                    colors: {
+                        medis: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                        },
+                        tealmed: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                        },
+                        navy: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        },
+                        gold: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom styles for academic typography, subtle background pattern, presentation mode, and print */
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        .academic-prose {
+            font-family: 'Merriweather', serif;
+            line-height: 1.85;
+        }
+
+        .hero-pattern {
+            background-color: #0f172a;
+            background-image: 
+                radial-gradient(at 15% 20%, rgba(5, 150, 105, 0.28) 0px, transparent 50%),
+                radial-gradient(at 85% 80%, rgba(13, 148, 136, 0.25) 0px, transparent 50%),
+                radial-gradient(at 50% 10%, rgba(180, 83, 9, 0.16) 0px, transparent 45%);
+        }
+
+        /* Hide scrollbars cleanly for horizontal mobile pills */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Presentation Mode Enhancements */
+        body.presentation-mode {
+            font-size: 1.125rem;
+            background-color: #f1f5f9;
+        }
+        body.presentation-mode #desktop-sidebar {
+            display: none !important;
+        }
+        body.presentation-mode #main-content-col {
+            grid-column: span 12 / span 12 !important;
+            max-width: 1080px;
+            margin: 0 auto;
+        }
+        body.presentation-mode .academic-prose {
+            font-size: 1.1rem;
+            line-height: 1.95;
+        }
+
+        /* Print Media Styles */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                font-size: 11pt;
+            }
+            #main-content-col {
+                grid-column: span 12 / span 12 !important;
+                width: 100% !important;
+            }
+            section {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                box-shadow: none !important;
+                border: 1px solid #cbd5e1 !important;
+                margin-bottom: 1.5rem !important;
+            }
+            a[href^="http"]::after {
+                content: " (" attr(href) ")";
+                font-size: 8.5pt;
+                color: #475569;
+            }
+        }
+
+        /* Smooth fade-in animation */
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-fade-up {
+            animation: fadeSlideUp 0.35s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col selection:bg-medis-600 selection:text-white">
+
+    <!-- Top Reading Progress Bar -->
+    <div class="fixed top-0 left-0 w-full h-1.5 bg-slate-200/70 z-50 no-print">
+        <div id="reading-progress" class="h-full bg-gradient-to-r from-medis-600 via-tealmed-600 to-gold-500 transition-all duration-150" style="width: 0%;"></div>
+    </div>
+
+    <!-- Custom Toast Notification (Replaces alert()) -->
+    <div id="toast-container" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all duration-300 opacity-0 translate-y-4 no-print">
+        <div class="bg-navy-900 text-white px-5 py-3 rounded-xl shadow-xl border border-slate-700 flex items-center space-x-3 text-sm font-medium">
+            <i id="toast-icon" class="fa-solid fa-circle-check text-medis-500 text-base"></i>
+            <span id="toast-message">Notifikasi sistem</span>
+        </div>
+    </div>
+
+    <!-- Sticky Top Header Bar -->
+    <header class="sticky top-1.5 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-center justify-between py-3 gap-3">
+                <!-- Brand Identity -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-medis-700 to-tealmed-700 text-white flex items-center justify-center shadow-sm shrink-0">
+                        <i class="fa-solid fa-scale-balanced text-lg"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span class="font-extrabold text-navy-900 text-sm sm:text-base tracking-tight">MEDIKO-ETIKA RM</span>
+                            <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-gold-100 text-gold-700 border border-gold-500/30">
+                                Kelompok 4
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500">S1 Administrasi Rumah Sakit • Manajemen Rekam Medis</p>
+                    </div>
+                </div>
+
+                <!-- Search Input + Action Buttons -->
+                <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
+                    <!-- Quick Search Materi -->
+                    <div class="relative flex-1 sm:w-64">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input 
+                            type="text" 
+                            id="search-materi" 
+                            placeholder="Cari pasal, UU, bioetika, RME..." 
+                            class="w-full pl-8 pr-8 py-2 text-xs sm:text-sm bg-slate-100 border border-slate-200 rounded-xl focus:bg-white focus:border-medis-600 focus:ring-2 focus:ring-medis-500/20 focus:outline-none transition"
+                        >
+                        <button id="clear-search" onclick="resetSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 text-xs p-1" title="Hapus pencarian">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- Mode Presentasi Toggle -->
+                    <button 
+                        id="btn-presentation" 
+                        onclick="togglePresentationMode()" 
+                        class="px-3 py-2 rounded-xl bg-navy-900 hover:bg-navy-800 text-white text-xs sm:text-sm font-semibold transition flex items-center space-x-1.5 shadow-sm shrink-0"
+                        title="Aktifkan Mode Presentasi Kelas"
+                    >
+                        <i class="fa-solid fa-person-chalkboard text-gold-500"></i>
+                        <span class="hidden md:inline">Presentasi</span>
+                    </button>
+
+                    <!-- Mode Cetak Button -->
+                    <button 
+                        onclick="window.print()" 
+                        class="px-3 py-2 rounded-xl bg-medis-50 hover:bg-medis-100 text-medis-800 border border-medis-200 text-xs sm:text-sm font-semibold transition flex items-center space-x-1.5 shrink-0"
+                        title="Cetak atau Simpan PDF"
+                    >
+                        <i class="fa-solid fa-print"></i>
+                        <span class="hidden md:inline">Cetak</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Horizontal Pill Menu -->
+        <div class="lg:hidden border-t border-slate-100 bg-slate-50/90 px-4 py-2 overflow-x-auto no-scrollbar">
+            <nav class="flex items-center space-x-2 min-w-max" id="mobile-nav">
+                <a href="#sec-dualisme" class="mobile-pill px-3 py-1.5 rounded-full text-xs font-semibold bg-white text-slate-700 border border-slate-200 hover:border-medis-600 transition">1. Kepemilikan & ALFRED</a>
+                <a href="#sec-regulasi" class="mobile-pill px-3 py-1.5 rounded-full text-xs font-semibold bg-white text-slate-700 border border-slate-200 hover:border-medis-600 transition">2. Matriks Regulasi</a>
+                <a href="#sec-etika" class="mobile-pill px-3 py-1.5 rounded-full text-xs font-semibold bg-white text-slate-700 border border-slate-200 hover:border-medis-600 transition">3. Bioetika & RME</a>
+                <a href="#sec-lab-pelepasan" class="mobile-pill px-3 py-1.5 rounded-full text-xs font-semibold bg-white text-slate-700 border border-slate-200 hover:border-medis-600 transition">4. Lab: Pelepasan Info</a>
+                <a href="#sec-lab-retensi" class="mobile-pill px-3 py-1.5 rounded-full text-xs font-semibold bg-white text-slate-700 border border-slate-200 hover:border-medis-600 transition">5. Lab: Retensi 25 Thn</a>
+                <a href="#sec-lab-kuis" class="mobile-pill px-3 py-1.5 rounded-full text-xs font-semibold bg-white text-slate-700 border border-slate-200 hover:border-medis-600 transition">6. Lab: Kuis Kasus</a>
+                <a href="#sec-referensi" class="mobile-pill px-3 py-1.5 rounded-full text-xs font-semibold bg-white text-slate-700 border border-slate-200 hover:border-medis-600 transition">7. Acuan Resmi</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Search Filter Status Banner -->
+    <div id="search-status-bar" class="hidden bg-gold-50 border-b border-gold-500/30 py-2.5 px-4 no-print">
+        <div class="max-w-7xl mx-auto flex items-center justify-between text-xs sm:text-sm text-gold-700">
+            <div>
+                <i class="fa-solid fa-filter mr-1.5"></i>
+                Menampilkan hasil filter untuk kata kunci: <strong id="search-term-display">""</strong> (<span id="search-match-count">0</span> bagian relevan)
+            </div>
+            <button onclick="resetSearch()" class="font-bold underline hover:text-navy-900">Tampilkan Semua Materi</button>
+        </div>
+    </div>
+
+    <!-- 1. HERO BANNER AKADEMIS -->
+    <section class="hero-pattern text-white py-10 sm:py-14 border-b border-slate-800 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <!-- Academic Course Badge -->
+            <div class="inline-flex flex-wrap items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs sm:text-sm font-medium text-medis-100 mb-5">
+                <span class="w-2 h-2 rounded-full bg-medis-500 animate-pulse"></span>
+                <span>Prodi S1 Administrasi Rumah Sakit</span>
+                <span class="text-slate-400">•</span>
+                <span>Mata Kuliah: <strong class="text-white">Manajemen Rekam Medis</strong></span>
+                <span class="text-slate-400">•</span>
+                <span class="text-gold-400 font-bold">Kelompok 4</span>
+            </div>
+
+            <!-- Main Title & Subtitle -->
+            <div class="max-w-4xl">
+                <h1 class="text-2xl sm:text-4xl lg:text-[2.65rem] font-extrabold tracking-tight leading-tight text-white">
+                    Legalitas dan Etika dalam Penyelenggaraan Rekam Medis &amp; RME
+                </h1>
+                <p class="mt-4 text-sm sm:text-lg text-slate-300 leading-relaxed max-w-3xl">
+                    Kajian komprehensif tata kelola hukum, pelindungan data pribadi kesehatan, bioetika profesi, serta simulasi pengambilan keputusan manajerial di fasilitas pelayanan kesehatan Indonesia.
+                </p>
+            </div>
+
+            <!-- 4 Key Metric Summary Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+                <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-medis-400">Payung Hukum Utama</span>
+                        <i class="fa-solid fa-gavel text-medis-400"></i>
+                    </div>
+                    <div class="text-xl font-extrabold text-white">Pasal 296–300</div>
+                    <div class="text-xs text-slate-300 mt-1">UU No. 17 Tahun 2023 tentang Kesehatan</div>
+                </div>
+
+                <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-teal-300">Digitalisasi &amp; CIA</span>
+                        <i class="fa-solid fa-laptop-medical text-teal-300"></i>
+                    </div>
+                    <div class="text-xl font-extrabold text-white">Permenkes 24/2022</div>
+                    <div class="text-xs text-slate-300 mt-1">Wajib Rekam Medis Elektronik (RME)</div>
+                </div>
+
+                <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-gold-400">Privasi Data Kesehatan</span>
+                        <i class="fa-solid fa-shield-halved text-gold-400"></i>
+                    </div>
+                    <div class="text-xl font-extrabold text-white">UU No. 27/2022 PDP</div>
+                    <div class="text-xs text-slate-300 mt-1">Pasal 4(2)(a): Data Pribadi Spesifik</div>
+                </div>
+
+                <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-300">Penyimpanan Arsip</span>
+                        <i class="fa-solid fa-clock-rotate-left text-emerald-300"></i>
+                    </div>
+                    <div class="text-xl font-extrabold text-white">Minimal 25 Tahun</div>
+                    <div class="text-xs text-slate-300 mt-1">Retensi RME Sejak Kunjungan Terakhir</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Container -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 flex-1 w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+            <!-- Desktop Sticky Sidebar Navigation -->
+            <aside id="desktop-sidebar" class="hidden lg:block lg:col-span-3 sticky top-24 space-y-5 no-print">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+                    <div class="flex items-center justify-between px-2 mb-3">
+                        <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Navigasi Modul</span>
+                        <span class="text-[11px] font-semibold text-medis-700 bg-medis-50 px-2 py-0.5 rounded-full">7 Bagian</span>
+                    </div>
+                    <nav class="space-y-1" id="desktop-nav">
+                        <a href="#sec-dualisme" class="sidebar-link flex items-center space-x-2.5 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-medis-50 hover:text-medis-800 transition">
+                            <i class="fa-solid fa-folder-tree w-4 text-center text-medis-600"></i>
+                            <span>Hakikat &amp; Dualisme RM</span>
+                        </a>
+                        <a href="#sec-regulasi" class="sidebar-link flex items-center space-x-2.5 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-medis-50 hover:text-medis-800 transition">
+                            <i class="fa-solid fa-book-bookmark w-4 text-center text-medis-600"></i>
+                            <span>Matriks Regulasi Hukum</span>
+                        </a>
+                        <a href="#sec-etika" class="sidebar-link flex items-center space-x-2.5 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-medis-50 hover:text-medis-800 transition">
+                            <i class="fa-solid fa-heart-pulse w-4 text-center text-medis-600"></i>
+                            <span>Pilar Bioetika &amp; RME</span>
+                        </a>
+                        <div class="pt-2 pb-1 px-3">
+                            <span class="text-[11px] font-extrabold text-gold-700 uppercase tracking-wider">Laboratorium Interaktif</span>
+                        </div>
+                        <a href="#sec-lab-pelepasan" class="sidebar-link flex items-center space-x-2.5 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-gold-50 hover:text-gold-800 transition">
+                            <i class="fa-solid fa-user-shield w-4 text-center text-gold-600"></i>
+                            <span>Lab 1: Pelepasan Informasi</span>
+                        </a>
+                        <a href="#sec-lab-retensi" class="sidebar-link flex items-center space-x-2.5 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-gold-50 hover:text-gold-800 transition">
+                            <i class="fa-solid fa-calculator w-4 text-center text-gold-600"></i>
+                            <span>Lab 2: Kalkulator Retensi</span>
+                        </a>
+                        <a href="#sec-lab-kuis" class="sidebar-link flex items-center space-x-2.5 px-3 py-2.5 rounded-
